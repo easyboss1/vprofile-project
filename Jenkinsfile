@@ -15,6 +15,8 @@ pipeline {
 		NEXUSPORT = '8081'
 		NEXUS_GRP_REPO = 'vpro-maven-group'
         NEXUS_LOGIN = 'nexuslogin'
+        SONARSERVER = 'sonarserver'
+        SONARSCANNER = 'sonarscanner'
     }
 
     stages {
@@ -23,23 +25,26 @@ pipeline {
                 sh 'mvn -s settings.xml -DskipTests install'
             }
             post {
-                success{
+                success {
                     echo "Now Archiving."
                     archiveArtifacts artifacts: '**/*.war'
                 }
             }
         }
+
         stage('Test'){
             steps {
                 sh 'mvn -s settings.xml test'
             }
+
         }
+
         stage('Checkstyle Analysis'){
             steps {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
         }
-        
+
         stage('Sonar Analysis') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
@@ -59,4 +64,3 @@ pipeline {
         }
     }
 }
-    
